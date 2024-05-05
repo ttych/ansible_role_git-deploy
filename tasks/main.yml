@@ -1,0 +1,16 @@
+---
+
+- block:
+    - include_tasks: context.yml
+
+    - include_tasks: fs.yml
+
+    - include_tasks: accounts.yml
+
+    - include_tasks: workspace.yml
+
+    - include_tasks: gitserve.yml
+
+    - include_tasks: repositories.yml
+
+    - include_tasks: authorized_keys.yml

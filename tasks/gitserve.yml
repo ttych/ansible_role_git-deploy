@@ -1,0 +1,9 @@
+---
+
+- name: deploy gitserve wrapper
+  template:
+    src: gitserve
+    dest: "{{ git_deploy_gitserve }}"
+    owner: "{{ git_deploy_user.name }}"
+    group: "{{ git_deploy_user.group }}"
+    mode: '0700'

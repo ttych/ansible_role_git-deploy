@@ -1,0 +1,28 @@
+---
+
+- name: init repository
+  command: "git init --bare {{ git_deploy_dir }}/{{ item }}"
+  args:
+    creates: "{{ git_deploy_dir }}/{{ item }}/HEAD"
+  become: yes
+  become_user: "{{ git_deploy_user.name }}"
+  loop: "{{ git_deploy_repositories }}"
+
+- name: check denyNonFastForwards on repository
+  lineinfile:
+    path: "{{ git_deploy_dir }}/{{ item }}/config"
+    regexp: 'denyNonFastForwards = true'
+    state: absent
+  check_mode: yes
+  changed_when: false
+  loop: "{{ git_deploy_repositories }}"
+  register: t_git_deploy_git_denyNonFastForwards
+
+- name: set denyNonFastForwards on repository
+  command: "git config --local receive.denyNonFastForwards true"
+  args:
+    chdir: "{{ git_deploy_dir }}/{{ item.item }}"
+  become: yes
+  become_user: "{{ git_deploy_user.name }}"
+  when: not item.found
+  loop: "{{ t_git_deploy_git_denyNonFastForwards.results }}"

@@ -1,0 +1,30 @@
+---
+
+- name: include distribution specific variables
+  include_vars:
+    dir: vars
+    files_matching: "{{ item }}"
+  loop:
+    - "{{ ansible_system }}.yml"
+    - "{{ ansible_os_family }}.yml"
+    - "{{ ansible_distribution }}.yml"
+    - "{{ ansible_distribution + '_' + ansible_distribution_major_version }}.yml"
+    - "{{ ansible_distribution + '_' + ansible_distribution_version }}.yml"
+
+- name: include service variables
+  include_vars:
+    dir: vars
+    files_matching: "service.yml"
+  when: has_service|d(false)
+
+- name: include daemontools variables
+  include_vars:
+    dir: vars
+    files_matching: "daemontools.yml"
+  when: has_daemontools|d(false)
+
+- name: include runit variables
+  include_vars:
+    dir: vars
+    files_matching: "runit.yml"
+  when: has_runit|d(false)

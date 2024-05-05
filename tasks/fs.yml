@@ -1,0 +1,32 @@
+---
+
+- block:
+
+    - block:
+        - name: set git_deploy_dir parent directory
+          set_fact:
+            git_deploy_parent_dir: "{{ git_deploy_dir | dirname }}"
+
+        - name: set parent directory dataset
+          shell: zfs list -H "{{ git_deploy_parent_dir }}" | awk '$5 == "{{ git_deploy_parent_dir }}" { print $1 }'
+          changed_when: no
+          register: t_git_deploy_parent_dataset
+
+        - name: set git_deploy_dir_dataset
+          set_fact:
+            git_deploy_dir_dataset: "{{ t_git_deploy_parent_dataset.stdout.strip() }}/{{ git_deploy_dir | basename }}"
+
+      when: git_deploy_dir_dataset is not defined or not git_deploy_dir_dataset
+
+
+    - block:
+
+        - name: "dataset for {{ git_deploy_dir }}"
+          zfs:
+            name: "{{ git_deploy_dir_dataset }}"
+            state: present
+            extra_zfs_properties: "{{ git_deploy_zfs_dataset_properties | combine(git_deploy_dir_zfs_properties | default({})) | combine({ 'mountpoint': git_deploy_dir }) }}"
+
+      when: git_deploy_dir_dataset is defined and git_deploy_dir_dataset
+
+  when: git_deploy_zfs_try

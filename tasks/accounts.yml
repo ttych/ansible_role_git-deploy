@@ -1,0 +1,34 @@
+---
+
+- name: create git-deploy groups
+  group:
+    name: "{{ group.name }}"
+    state: present
+    gid: "{{ group.gid | default(omit) }}"
+    system: "{{ group.system | default('no') }}"
+  vars:
+    group: "{{ git_deploy_group }}"
+
+- name: create git-deploy users
+  user:
+    name: "{{ user.name }}"
+    uid: "{{ user.uid | default(omit) }}"
+    comment: "{{ user.comment }}"
+    create_home: "{{ user.create_home | default(omit) }}"
+    home: "{{ user.home | default(git_deploy_dir) }}"
+    force: yes
+    group: "{{ user.group }}"
+    groups: "{{ user.groups | default(omit) }}"
+    shell: "{{ user.shell | default('/usr/sbin/nologin') }}"
+    password: "{{ user.password|default(omit) }}"
+    state: "{{ user.state | default('present') }}"
+  vars:
+    user: "{{ git_deploy_user }}"
+
+- name: add authorized_keys
+  authorized_key:
+    user: "{{ git_deploy_user.name }}"
+    state: present
+    key: "{{ item }}"
+  when: item.authorized_key is defined and item.authorized_key
+  loop: "{{ git_deploy_user.authorized_keys|d([]) }}"

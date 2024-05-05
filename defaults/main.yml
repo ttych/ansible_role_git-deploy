@@ -1,0 +1,32 @@
+---
+
+git_deploy_groups: []
+#  - name: app
+#    gid: 1234
+git_deploy_users: []
+#  - name: app
+#    uid: 1234
+#    shell: /usr/sbin/nologin
+#    comment: app
+#    group: app
+#    home_mode: '0700'
+
+git_deploy_gitserve: "{{ git_deploy_user.home | d(git_deploy_dir) }}/_gitserve"
+git_deploy_ssh_dir: "{{ git_deploy_user.home | d(git_deploy_dir) }}/.ssh"
+git_deploy_authorized_keys: "{{ git_deploy_ssh_dir }}/authorized_keys"
+
+git_deploy_repositories: []
+
+git_deploy_zfs_try: true
+git_deploy_zfs_dataset_properties:
+  setuid: off
+  compression: "lz4"
+  sharenfs: off
+  sharesmb: off
+  atime: off
+  relatime: off
+
+
+# git_deploy_directories:
+#   - { path: "{{ git_deploy_home }}", owner: "{{ git_deploy_user }}", group: "{{ git_deploy_group }}", mode: "0700" }
+#   - { path: "{{ git_deploy_home_ssh }}", owner: "{{ git_deploy_user }}", group: "{{ git_deploy_group }}", mode: "0700" }

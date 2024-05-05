@@ -1,0 +1,24 @@
+---
+
+- name: setup workspace directory tree
+  file:
+    path: "{{ item.path | d(omit) }}"
+    src: "{{ item.src | d(omit) }}"
+    dest: "{{ item.dest | d(omit) }}"
+    owner: "{{ item.owner | d(omit) }}"
+    group: "{{ item.group | d(omit) }}"
+    mode: "{{ item.mode | d(omit) }}"
+    state: "{{ item.state|d('directory') }}"
+  loop:
+    - path: "{{ git_deploy_dir }}"
+      owner: "{{ git_deploy_user.name }}"
+      group: "{{ git_deploy_user.group }}"
+      mode: '0700'
+    - path: "{{ git_deploy_user.home | d(git_deploy_dir) }}"
+      owner: "{{ git_deploy_user.name }}"
+      group: "{{ git_deploy_user.group }}"
+      mode: '0700'
+    - path: "{{ git_deploy_ssh_dir }}"
+      owner: "{{ git_deploy_user.name }}"
+      group: "{{ git_deploy_user.group }}"
+      mode: '0700'
